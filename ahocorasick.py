@@ -29,6 +29,7 @@ def create_keyword_tree(patterns):
                 unode.fail = failnode.goto[key]
             else:
                 unode.fail = root
+            unode.out+=unode.fail.out
     return root
 
 def find(s,root):
@@ -43,12 +44,12 @@ def find(s,root):
         for pattern in node.out:
             p=(i-len(pattern)+1)
             print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
-        for pattern in node.fail.out:
+        '''for pattern in node.fail.out:
             p=(i-len(pattern)+1)
-            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
+            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)'''
     
 if __name__ == '__main__':
-    patterns=['at','cat','bat','hit','man']
+    patterns=['abcd','bcd','cd','d']
     '''with open('abc.txt') as f:
         for lines in f:
             line=lines[:-1]
