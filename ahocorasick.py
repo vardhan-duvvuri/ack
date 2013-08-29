@@ -19,19 +19,21 @@ def create_keyword_tree(patterns):
         queue.append(node)
         node.fail = root
     while len(queue) > 0:
-        rnode=queue.pop(0)
-        for key,unode in rnode.goto.iteritems():
+        pnode=queue.pop(0)
+        for key,unode in pnode.goto.iteritems():
             queue.append(unode)
-            fnode=rnode.fail
-            while fnode !=None and not fnode.goto.has_key(key):
-                fnode=fnode.fail
-            unode.fail=fnode.goto[key] if fnode else root
-            unode.out+=unode.fail.out
+            failnode=pnode.fail
+            while failnode != None and not failnode.goto.has_key(key):
+                failnode=failnode.fail
+            if failnode != None:
+                unode.fail = failnode.goto[key]
+            else:
+                unode.fail = root
     return root
 
 def find(s,root):
     node=root
-    for i in xrange(len(s)):
+    for i in range(len(s)):
         while node != None and not node.goto.has_key(s[i]):
             node=node.fail
         if node == None:
@@ -39,14 +41,19 @@ def find(s,root):
             continue
         node=node.goto[s[i]]
         for pattern in node.out:
-            print "At position %s keyword %s found." %((i-len(pattern)+1),pattern)
+            p=(i-len(pattern)+1)
+            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
+        for pattern in node.fail.out:
+            p=(i-len(pattern)+1)
+            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
+    
 if __name__ == '__main__':
-    patterns=[]
-    with open('abc.txt') as f:
+    patterns=['at','cat','bat','hit','man']
+    '''with open('abc.txt') as f:
         for lines in f:
             line=lines[:-1]
-            patterns.append(line)
+            patterns.append(line)'''
 
     root=create_keyword_tree(patterns)
-    s=raw_input("Enter the string : ")
-    find(s,root)
+    input=raw_input("Enter the string : ")
+    find(input,root)
