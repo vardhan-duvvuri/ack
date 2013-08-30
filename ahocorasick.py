@@ -19,20 +19,19 @@ def create_keyword_tree(patterns):
         queue.append(node)
         node.fail = root
     while len(queue) > 0:
-        pnode=queue.pop(0)
-        for key,unode in pnode.goto.iteritems():
+        parentnode=queue.pop(0)
+        for key,unode in parentnode.goto.iteritems():
             queue.append(unode)
-            failnode=pnode.fail
+            failnode=parentnode.fail
             while failnode != None and not failnode.goto.has_key(key):
                 failnode=failnode.fail
             if failnode != None:
                 unode.fail = failnode.goto[key]
             else:
                 unode.fail = root
-            unode.out+=unode.fail.out
     return root
 
-def find(s,root):
+def search(s,root):
     node=root
     for i in range(len(s)):
         while node != None and not node.goto.has_key(s[i]):
@@ -41,20 +40,21 @@ def find(s,root):
             node=root
             continue
         node=node.goto[s[i]]
-        for pattern in node.out:
-            p=(i-len(pattern)+1)
-            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
-        '''for pattern in node.fail.out:
-            p=(i-len(pattern)+1)
-            print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)'''
-    
+        temp=node
+        while node != None:
+            for pattern in node.out:
+                p=(i-len(pattern)+1)
+                print "The pattern '%s' found from position %s to position %s" %(pattern,p,p+len(pattern)-1)
+            node=node.fail
+        node=temp
+
 if __name__ == '__main__':
-    patterns=['abcd','bcd','cd','d']
-    '''with open('abc.txt') as f:
+    patterns=[]
+    with open('abc.txt') as f:
         for lines in f:
             line=lines[:-1]
-            patterns.append(line)'''
+            patterns.append(line)
 
     root=create_keyword_tree(patterns)
     input=raw_input("Enter the string : ")
-    find(input,root)
+    search(input,root)
